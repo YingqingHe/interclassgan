@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+
+
+<!-- === Header Starts === -->
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <title>InterClassGAN</title>
+
+  <link href="./assets/bootstrap.min.css" rel="stylesheet">
+  <link href="./assets/font.css" rel="stylesheet" type="text/css">
+  <link href="./assets/style.css" rel="stylesheet" type="text/css">
+
+  <style>
+    .inner {
+      position: relative;
+      /* vertical-align: middle; */
+      font-size: 20px;
+      width: 2px;
+      top: 50%;
+      left: 50%;
+      height: 50px;
+      line-height: 20px;
+      text-align: center;
+      margin: 0;
+    }
+  </style>
+
+</head>
+<!-- === Header Ends === -->
+
+
+<body>
+
+
+<!-- === Home Section Starts === -->
+<div class="section">
+  <!-- === Title Starts === -->
+  <div class="header">
+    <div class="title", style="padding-top: 25pt;">
+      Interpreting Class Conditional GANs with Channel Awareness
+    </div>
+  </div>
+  <!-- === Title Ends === -->
+  <div class="author">
+    <a href="https://yingqinghe.github.io/" target="_blank">Yingqing He</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="https://www.brando.dev/" target="_blank">Zhiyi Zhang</a><sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="https://zhujiapeng.github.io/" target="_blank">Jiapeng Zhu</a><sup>1</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="https://shenyujun.github.io/" target="_blank">Yujun Shen</a><sup>2</sup>&nbsp;&nbsp;&nbsp;&nbsp;
+    <a href="https://cqf.io/" target="_blank">Qifeng Chen</a><sup>1</sup>
+
+  </div>
+  <div class="institution">
+    <sup>1</sup>HKUST &nbsp;&nbsp;&nbsp;&nbsp;
+    <sup>2</sup>ByteDance Inc.
+  </div>
+  <div class="link">
+    [<a href="https://arxiv.org/pdf/TODO.pdf" target="_blank">Paper</a>]&nbsp;&nbsp;
+    [<a href="https://github.com/YingqingHe/interclassgan" target="_blank">Code</a>]
+  </div>
+  <div class="teaser">
+    <img src="./assets/teaser.jpg">
+  </div>
+</div>
+<!-- === Home Section Ends === -->
+
+
+<!-- === Overview Section Starts === -->
+<div class="section">
+  <div class="title">Overview</div>
+  <div class="body">
+    This work targets understanding how a class conditional GAN manages to unify the synthesis of various classes.
+
+    <li style="padding-top: 10pt;">
+      We take a close look at the widely used class-conditional batch normalization (CCBN) layer, and observe that, followed by the ReLU activation, CCBN helps distribute the categorical information to feature channels. That says, for a particular channel, it makes varying contribution to synthesizing different categories.
+    </li>
+
+    <li style="padding-top: 10pt;">
+      We discover that (1) only a portion of channels are active in rendering images for a particular class while the remaining channels barely affect the generation, (2) more similar categories tend to share more relevant channels (<i>e.g.</i>, channels regarding dog synthesis intersect with those of cats but disjoint from those of buses), and (3) some channels highly response to the latent code instead of the class embedding and hence appear to deliver knowledge to all classes.
+    </li>
+
+    <li style="padding-top: 10pt;">
+      Our findings enable four novel applications with class conditional GANs, including (1) single-channel image editing, (2) category hybridization, (3) fine-grained semantic segmentation, and (4) category-wise synthesis performance evaluation.
+    </li>
+
+  </div>
+</div>
+<!-- === Overview Section Ends === -->
+
+
+<!-- === Application Section Starts === -->
+
+<div class="section">
+  <div class="title">Application 1: Single-channel Image Editing</div>
+  <div class="body">
+    <p style="margin-top: 10pt; text-align:center; font-size:26px"><b>Category-oriented Attributes</b><p>
+
+
+
+    <p style="margin-top: 15pt; text-align:center; font-size:20px"><b>Category: Boston Bull</b><p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td><b>Mouth</b></td>
+        <td><b>Ear</b></td>
+        <td><b>Face</b></td>
+        <td><b>Tongue</b></td>
+      </tr>
+      <tr>
+        <td><img src="./assets/category_attributes/class195/mouth.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class195/ear.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class195/nose.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class195/tongue.gif" width="90%"></td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 15pt; text-align:center; font-size:20px"><b>Category: Brambling</b><p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td><b>Body Size</b></td>
+        <td><b>Head Pose</b></td>
+        <td><b>Belly</b></td>
+        <td><b>Feather</b></td>
+      </tr>
+      <tr>
+        <td><img src="./assets/category_attributes/class10_bird/big.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class10_bird/head.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class10_bird/belly.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class10_bird/feather.gif" width="90%"></td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 15pt; text-align:center; font-size:20px"><b>Category: Volcano</b><p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td><b>Mountain Size</b></td>
+        <td><b>Ash</b></td>
+        <td><b>Fire</b></td>
+        <td><b>Sky</b></td>
+      </tr>
+      <tr>
+        <td><img src="./assets/category_attributes/class980_mountain/mountain_size.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class980_mountain/ash.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class980_mountain/explosion3.gif" width="90%"></td>
+        <td><img src="./assets/category_attributes/class980_mountain/bkg.gif" width="90%"></td>
+      </tr>
+    </table>
+
+    <p style="margin-top: 15pt; text-align:center; font-size:20px"><b>Category: Castle</b><p>
+      <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+        <tr>
+          <td><b>Width</b></td>
+          <td><b>Cloud</b></td>
+          <td><b>Foreground</b></td>
+          <td><b>Water</b></td>
+        </tr>
+        <tr>
+          <td><img src="./assets/category_attributes/class483_castle/long_shape.gif" width="90%"></td>
+          <td><img src="./assets/category_attributes/class483_castle/cloud.gif" width="90%"></td>
+          <td><img src="./assets/category_attributes/class483_castle/foreground.gif" width="90%"></td>
+          <td><img src="./assets/category_attributes/class483_castle/water.gif" width="90%"></td>
+        </tr>
+      </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="title">Application 1: Single-channel Image editing</div>
+  <div class="body">
+      <p style="margin-top: 10pt; text-align:center; font-size:26px"><b>Latent-oriented Attributes</b><p>
+
+      <!-- table-layout: fixed; -->
+      <table width="100%" style="margin: 0pt auto; border-collapse: separate; border-spacing: 5pt; text-align: center;">
+        <tr>
+          <td><b>   </b></td>
+          <td><b>Bubble</b></td>
+          <td><b>Great Grey Owl</b></td>
+          <td><b>Bee Eater</b></td>
+          <td><b>Speedboat</b></td>
+          <td><b>Lifeboat</b></td>
+        </tr>
+        <tr>
+          <td style="width: 2px"><b>
+            <div class="inner" style="transform: translateX(300%) translateY(30%) rotate(270deg)">
+              Size
+            </div>
+          </b></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/size_l0_ch650_negative/seed12_layer0_ch650_add_negative_c971.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/size_l0_ch650_negative/seed2_layer0_ch650_add_negative_c24.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/size_l0_ch650_negative/seed2_layer0_ch650_add_negative_c92.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/size_l0_ch650_negative/seed35_layer0_ch650_multiply_negative_c814.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/size_l0_ch650_negative/seed6_layer0_ch650_add_negative_c625.gif" width="90%"></td>
+        </tr>
+
+        <tr>
+          <td style="width: 2px"><b>
+            <div class="inner" style="transform: translateX(300%) translateY(100%) rotate(270deg)">
+              Background
+            </div>
+          </b></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/bkg_l5_ch402_positive/seed12_layer5_ch402_add_postive_c971.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/bkg_l5_ch402_positive/seed2_layer5_ch402_add_postive_c24.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/bkg_l5_ch402_positive/seed2_layer5_ch402_add_postive_c92.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/bkg_l5_ch402_positive/seed35_layer5_ch402_add_postive_c814.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/bkg_l5_ch402_positive/seed6_layer5_ch402_add_postive_c625.gif" width="90%"></td>
+        </tr>
+
+        <tr>
+          <td style="width: 2px"><b>
+            <div class="inner" style="transform: translateX(300%) translateY(30%) rotate(270deg)">
+              Style
+            </div>
+          </b></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/style_l8_ch194_positive/seed12_layer8_ch194_add_postive_c971.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/style_l8_ch194_positive/seed2_layer8_ch194_add_postive_c24.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/style_l8_ch194_positive/seed2_layer8_ch194_add_postive_c92.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/style_l8_ch194_positive/seed35_layer8_ch194_add_postive_c814.gif" width="90%"></td>
+          <td style="width:20%"><img src="./assets/latent_attributes/style_l8_ch194_positive/seed6_layer8_ch194_add_postive_c625.gif" width="90%"></td>
+        </tr>
+      </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="title">Application 2: Category Hybridization</div>
+  <div class="body">
+    <p style="margin-top: 10pt; text-align:center; font-size:20px">
+      Fuse the characteristics of two classes: mix features regarding the <b><i>class-relevant channels</i></b>.
+    <p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td><img src="./assets/cate_hybrid.jpg" width="90%"></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="title">Application 3: Fine-grained Semantic Segmentation</div>
+  <div class="body">
+    <p style="margin-top: 10pt; text-align:center; font-size:20px">
+      Segment synthesized samples: perform clustering on per-pixel features <b><i>weighted by channel awareness</i></b>.
+    <p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td><img src="./assets/segmentation.jpg" width="100%"></td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<div class="section">
+  <div class="title">Application 4: Category-wise Synthesis Performance Evaluation</div>
+  <div class="body">
+    <p style="margin-top: 10pt; text-align:center; font-size:20px">
+      Categories with <b>high</b> total channel awareness: <b><i>high quality and low diversity</i></b>.
+    <p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td>Manhole Cover</td>
+        <td>Rapeseed</td>
+        <td>Odometer</td>
+        <td>Website</td>
+        <td>Cypripedium parviflorum</td>
+      </tr>
+      <tr>
+        <td><img src="./assets/performance_eval/1.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/2.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/3.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/4.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/5.jpg" width="95%"></td>
+      <tr>
+    </table>
+
+    <p style="margin-top: 10pt; text-align:center; font-size:20px">
+      Categories with <b>low</b> total channel awareness: <b><i>low quality and high diversity</i></b>.
+    <p>
+    <table width="100%" style="margin: 0pt 0; text-align: center; table-layout: fixed;">
+      <tr>
+        <td>Chainsaw</td>
+        <td>Stretcher</td>
+        <td>Reel</td>
+        <td>Plastic Bag</td>
+        <td>Barrow</td>
+      </tr>
+      </tr>
+        <td><img src="./assets/performance_eval/6.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/7.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/8.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/9.jpg" width="95%"></td>
+        <td><img src="./assets/performance_eval/10.jpg" width="95%"></td>
+      <tr>
+    </table>
+  </div>
+</div>
+<!-- === Application Section Ends === -->
+
+
+<!-- === Reference Section Starts === -->
+<div class="section">
+  <div class="bibtex">BibTeX</div>
+<pre>
+  @article{he2022interpreting,
+    title   = {Interpreting Class Conditional GANs with Channel Awareness},
+    author  = {He, Yingqing and Zhang, Zhiyi and Zhu, Jiapeng and Shen, Yujun and Chen, Qifeng},
+    article = {arXiv preprint arXiv:TODO},
+    year    = {2022}
+  }
+</pre>
+
+<div class="ref">Related Work</div>
+
+<div class="citation">
+  <div class="image"><img src="./assets/related_work/biggan.jpg"></div>
+  <div class="comment">
+    <a href="https://nv-tlabs.github.io/datasetGAN" target="_blank">
+      Andrew Brock, Jeff Donahue, Karen Simonyan.
+      Large scale GAN training for high fidelity natural image synthesis.
+      ICLR, 2019.</a><br>
+    <b>Comment:</b>
+    Proposes a large-scale conditional GAN, <i>i.e.</i>, BigGAN, trained on ImageNet.
+  </div>
+</div>
+
+<div class="citation">
+  <div class="image"><img src="./assets/related_work/stylespace.jpg"></div>
+  <div class="comment">
+    <a href="https://nv-tlabs.github.io/datasetGAN" target="_blank">
+      Zongze Wu, Dani Lischinski, Eli Shechtman.
+      StyleSpace Analysis: Disentangled Controls for StyleGAN Image Generation.
+      CVPR, 2021.</a><br>
+      <b>Comment:</b>
+      Studies the per-channel effect of StyleGAN with the help of segmentation masks and achieves single-channel image editing.
+  </div>
+</div>
+
+<div class="citation">
+  <div class="image"><img src="./assets/related_work/datasetgan.jpg"></div>
+  <div class="comment">
+    <a href="https://nv-tlabs.github.io/datasetGAN" target="_blank">
+      Yuxuan Zhang, Huan Ling, Jun Gao, Kangxue Yin, Jean-Francois Lafleche, Adela Barriuso, Antonio Torralba, Sanja Fidler.
+      DatasetGAN: Efficient labeled data factory with minimal human effort.
+      CVPR, 2021.</a><br>
+    <b>Comment:</b>
+    Equips StyleGAN with an auxiliary branch for fine-grained semantic segmentation using a few annotated examples.
+  </div>
+</div>
+
+</div>
+
+<!-- === Reference Section Ends === -->
+
+</body>
+</html>
